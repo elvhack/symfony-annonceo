@@ -4,7 +4,9 @@ namespace App\Controller;
 
 use App\Entity\Utilisateur;
 use App\Form\RegistrationFormType;
+use DateTime;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -26,9 +28,19 @@ class RegistrationController extends AbstractController
             $user->setPassword(
                 $passwordEncoder->encodePassword(
                     $user,
-                    $form->get('plainPassword')->getData()
+                    $form->get('password')->getData()
                 )
             );
+
+            $user->setPseudo($form->get('pseudo')->getData());
+            $user->setRoles(['ROLE_USER']);
+            $user->setPrenom($form->get('prenom')->getData());
+            $user->setNom($form->get('nom')->getData());
+            $user->setTelephone($form->get('telephone')->getData());
+
+            $user->setInscription(new DateTime('now'));
+
+
 
             $entityManager = $this->getDoctrine()->getManager();
             $entityManager->persist($user);
