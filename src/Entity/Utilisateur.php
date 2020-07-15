@@ -64,10 +64,16 @@ class Utilisateur
      */
     private $commentaires;
 
+    /**
+     * @ORM\OneToMany(targetEntity=Note::class, mappedBy="auteur")
+     */
+    private $notes;
+
     public function __construct()
     {
         $this->annonces = new ArrayCollection();
         $this->commentaires = new ArrayCollection();
+        $this->notes = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -213,6 +219,37 @@ class Utilisateur
         if ($this->commentaires->contains($commentaire)) {
             $this->commentaires->removeElement($commentaire);
             $commentaire->removeAuteur($this);
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Note[]
+     */
+    public function getNotes(): Collection
+    {
+        return $this->notes;
+    }
+
+    public function addNote(Note $note): self
+    {
+        if (!$this->notes->contains($note)) {
+            $this->notes[] = $note;
+            $note->setAuteur($this);
+        }
+
+        return $this;
+    }
+
+    public function removeNote(Note $note): self
+    {
+        if ($this->notes->contains($note)) {
+            $this->notes->removeElement($note);
+            // set the owning side to null (unless already changed)
+            if ($note->getAuteur() === $this) {
+                $note->setAuteur(null);
+            }
         }
 
         return $this;
