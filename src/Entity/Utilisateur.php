@@ -59,9 +59,15 @@ class Utilisateur
      */
     private $annonces;
 
+    /**
+     * @ORM\ManyToMany(targetEntity=Commentaire::class, mappedBy="auteur")
+     */
+    private $commentaires;
+
     public function __construct()
     {
         $this->annonces = new ArrayCollection();
+        $this->commentaires = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -179,6 +185,34 @@ class Utilisateur
             if ($annonce->getAuteur() === $this) {
                 $annonce->setAuteur(null);
             }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Commentaire[]
+     */
+    public function getCommentaires(): Collection
+    {
+        return $this->commentaires;
+    }
+
+    public function addCommentaire(Commentaire $commentaire): self
+    {
+        if (!$this->commentaires->contains($commentaire)) {
+            $this->commentaires[] = $commentaire;
+            $commentaire->addAuteur($this);
+        }
+
+        return $this;
+    }
+
+    public function removeCommentaire(Commentaire $commentaire): self
+    {
+        if ($this->commentaires->contains($commentaire)) {
+            $this->commentaires->removeElement($commentaire);
+            $commentaire->removeAuteur($this);
         }
 
         return $this;
